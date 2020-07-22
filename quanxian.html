@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>权限控制</title>
+    <script src="./jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" >
+        $(function(){
+            //查询
+            var select_id_btn = $("#select_id_btn");
+            select_id_btn.click(function () {
+                var select_id_btn_text = $("#select_id_btn_text");
+                var url = "findalluser/"+select_id_btn_text.val();
+                $.post({
+                    url:url,
+                    success:function(result){
+                        console.log(result)
+                        alert(result[0].userName);
+                        $("#userName").val(result.userName);
+                    }
+                });
+            });
+
+        });
+        function deleteByUserName(userName){
+            var url = "/deleteByUserName/" + userName;
+            alert("删除成功");
+            location.href = url;
+        }
+        function deleteByRoleName(roleName){
+            var url = "deleteByRoleName/" + roleName;
+            alert("删除成功");
+            location.href = url;
+        }
+        function deleteByAuthorityName(authorityName){
+            var url = "deleteByAuthorityName/" + authorityName;
+            alert("删除成功");
+            location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <div align="center">
+        <h1>学生管理系统权限控制层</h1>
+    </div>
+    <div>
+        通过用户ID查询用户名：<input type="text" id="select_id_btn_text" required="required" placeholder="userId" maxlength="20">
+        <button id="select_id_btn">查询</button>
+    </div>
+    <div>
+        <form action="/adduser" method="post">
+            给用户设置权限：
+            <input type="text" id="userName" name="userName" placeholder="userName" maxlength="20" required="required">
+            <select id="roleName" name="roleName">
+                <option>请选择</option>
+                <option>管理员</option>
+                <option>用户</option>
+            </select>
+            <input name="Submit" type="submit"value="提交">
+        </form>
+        <form action="/addrole" method="post">
+            给角色设置权限：
+            <select id="roleName2" name="roleName">
+                <option>请选择</option>
+                <option>管理员</option>
+                <option>用户</option>
+            </select>
+            <select id="authName" name="authName">
+                <option>请选择</option>
+                <option>增加</option>
+                <option>删除</option>
+                <option>修改</option>
+                <option>查询</option>
+            </select>
+            <input name="Submit" type="submit"value="提交">
+        </form>
+    </div>
+    </div>
+    <div align="center">
+        <h2>用户</h2>
+    </div>
+    <table align="center" border="1px" cellpadding="10%" >
+        <thead>
+        <tr>
+            <th>UserId</th>
+            <th>UserName</th>
+            <th>角色</th>
+            <th>删除</th>
+        </tr>
+        </thead>
+        <tr th:each="show:${findUser}" >
+            <td th:text="${show.userId}"></td>
+            <td th:text="${show.userName}"></td>
+            <td th:text="${show.roles.size() == 0 ? '无' : show.roles[0].roleName}"></td>
+            <td><a href='#' th:onclick="deleteByUserName([[${show.userName}]]);" >删除</a></td>
+        </tr>
+    </table>
+    <div align="center">
+
+        <h2>角色</h2>
+    </div>
+    <table align="center" border="1px" cellpadding="10%" >
+        <thead>
+        <tr>
+            <th>RoleId</th>
+            <th>RoleName</th>
+            <th>权限</th>
+            <th>删除</th>
+        </tr>
+        </thead>
+        <tr th:each="show:${findRole}">
+            <td th:text="${show.roleId}"></td>
+            <td th:text="${show.roleName}"></td>
+            <td th:text="${show.authorities.size() == 0 ? '无' : show.authorities[0].authorityName}"></td>
+            <td><a href='#' th:onclick="deleteByRoleName([[${show.roleName}]]);" >删除</a></td>
+        </tr>
+    </table>
+    <div align="center">
+
+        <h2>权限</h2>
+    </div>
+    <table align="center" border="1px" cellpadding="10%" >
+        <thead>
+        <tr>
+            <th>AuthId</th>
+            <th>AuthName</th>
+            <th>删除</th>
+        </tr>
+        </thead>
+        <tr th:each="show:${findAuth}">
+            <td th:text="${show.authorityId}"></td>
+            <td th:text="${show.authorityName}"></td>
+            <td><a href='#' th:onclick="deleteByAuthorityName([[${show.authorityName}]]);" >删除</a></td>
+        </tr>
+    </table>
+
+</body>
+</html>
